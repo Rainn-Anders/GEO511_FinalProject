@@ -1,0 +1,30 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Horseshoe Crab Nesting Sites in Delaware Bay",
+    "section": "",
+    "text": "[~ 200 words]\nI’m talking about horseshoe crabs; testing to see if my website is published. Clearly stated background and questions / hypotheses / problems being addressed. Sets up the analysis in an interesting and compelling way. Include figures if you like. I love those horseshoe crabs so much, what can I say? This is a test. Take 2."
+  },
+  {
+    "objectID": "index.html#download-and-clean-all-required-data",
+    "href": "index.html#download-and-clean-all-required-data",
+    "title": "Horseshoe Crab Nesting Sites in Delaware Bay",
+    "section": "Download and clean all required data",
+    "text": "Download and clean all required data\n\nn=20\ndata=data.frame(x=runif(n,-180,180),\n                y=runif(n,-60,60),\n                size = runif(n, 5, 20),\n                category = factor(\n                  sample(letters[1:5], n, replace = TRUE)\n                  ),\n                value = rnorm(n))\n\ndata %&gt;% \n  slice(1:10) %&gt;% #show only 1:n rows\n  kable(digits=2,align=\"c\")%&gt;% #make table and round to two digits\n  kable_styling(bootstrap_options = \n                  c(\"striped\", \"hover\", \"condensed\", \"responsive\")) #apply other formatting\n\n\n\n\nx\ny\nsize\ncategory\nvalue\n\n\n\n\n49.18\n-34.48\n6.71\nc\n0.66\n\n\n-103.88\n-17.38\n17.46\nc\n-0.33\n\n\n-14.59\n-24.70\n6.75\ne\n-0.83\n\n\n86.24\n-38.75\n15.71\na\n-1.01\n\n\n-144.41\n24.46\n10.40\nd\n0.82\n\n\n99.95\n-7.54\n5.51\ne\n0.27\n\n\n-102.58\n-21.69\n8.43\ne\n0.28\n\n\n56.91\n-13.89\n17.36\na\n2.21\n\n\n72.60\n47.96\n8.56\nd\n0.19\n\n\n11.19\n17.59\n8.19\ne\n-0.58\n\n\n\n\nAdd any additional processing steps here."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site\n\n1 + 1\n\n[1] 2"
+  },
+  {
+    "objectID": "data/Readme.html",
+    "href": "data/Readme.html",
+    "title": "Data Folder",
+    "section": "",
+    "text": "Data Folder\nPlace any data needed by your analysis in this folder. Please do not store large files here. Then read in any data using the ‘data’ path. For example, read_csv(\"data/data.csv\")."
+  }
+]
