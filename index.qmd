@@ -12,7 +12,7 @@ date-format: long
 
 I'm talking about horseshoe crabs; testing to see if my website is published. 
 Clearly stated background and questions / hypotheses / problems being addressed. Sets up the analysis in an interesting and compelling way. Include figures if you like.
-I love those horseshoe crabs so much, what can I say? This is a test.
+I love those horseshoe crabs so much, what can I say? This is a test. Take 2.
 
 # Materials and methods
 
