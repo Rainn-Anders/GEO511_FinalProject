@@ -78,6 +78,7 @@ gbif_df <- hsc_gbif$data |> # Extract data frame from occurrence records
   select(decimalLongitude, decimalLatitude, year) # Select coordinate data
 #'
 #'
+#'
 ```
 
 ##  Convert to spatial objects and count modern occurrences near beaches
