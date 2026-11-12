@@ -158,7 +158,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title">Modeling Horseshoe Crab Nesting Population Trends in Delaware Bay</h1>
-<p class="subtitle lead">Subtitle here if desired</p>
 </div>
 
 
@@ -189,11 +188,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="introduction" class="level1">
 <h1>Introduction</h1>
-<p>How has the overexploitation of the American Horseshoe Crab (Limulus polyphemus) for commercial and biomedical harvesting impacted their Delaware Bay spawning populations? One of the oldest extant species, horseshoe crabs play a vital role in bay shore ecosystems. The Red Knot, among many other migratory birds, relies primarily on horseshoe crab eggs to complete its journey North. Specifically, this shorebird makes its final “pit stop” in Delaware Bay, the largest aggregation of horseshoe crab nesting sites. Since overharvesting of crabs has led to severe population declines in the past century, I am interested in determining how recent legislation passed regarding harvesting restrictions has affected spawning populations, particularly in the Delaware Bay shore region.</p>
+<p>How has the overexploitation of the American Horseshoe Crab (Limulus polyphemus) for commercial and biomedical harvesting impacted their Delaware Bay spawning populations? One of the oldest extant species, horseshoe crabs play a vital role in bay shore ecosystems. The Red Knot, among many other migratory birds, relies primarily on horseshoe crab eggs to complete its journey North. Specifically, this shorebird makes its final “pit stop” in Delaware Bay, the largest aggregation of horseshoe crab nesting sites. Since overharvesting of crabs has led to severe population declines in the past century, I am interested in determining how recent legislation passed regarding harvesting restrictions has affected spawning populations, particularly in the Delaware Bay shore region. By modeling historical citizen science occurrence data alongside annual spawning survey data, I intend to visualize fluctuations in horseshoe crab nesting sites. While this study will not prove correlation, it may provide insight as to how crab populations have changed since the establishment of anti-over-harvesting legislature.</p>
 </section>
 <section id="materials-and-methods" class="level1">
 <h1>Materials and methods</h1>
-<p>First, the study area was defined by drawing survey beach coordinates from the Delaware Bay Horseshoe Crab Annual Spawning Survey. Using the rgbif package, citizen scientist observation data of L. polyphemus was curated for 1970 (pre-legislation) to 2026 (post-legislation). After creating buffer rings around the survey beaches, occurrence data was filtered and summarized by decade. The horseshoe crab spawning survey csv file (located in the /data folder).</p>
+<p>The study area was first defined by drawing 28 survey beach coordinates from the Delaware Bay Horseshoe Crab Annual Spawning Survey. Using the rgbif package, citizen scientist observation data of L. polyphemus was curated for 1970 (pre-legislation) to 2026 (post-legislation). After creating buffer rings around the survey beaches, occurrence data was filtered and summarized by decade. The horseshoe crab spawning survey csv file (located in the /data folder) will be used to compare citizen science data to official survey records and further visualize population fluctuations. Specifically, I intend to use the Baywide Male &amp; Female Spawning Activity and % Female Spawning in May columns to model changes in nesting sites.</p>
 <section id="load-required-packages" class="level2">
 <h2 class="anchored" data-anchor-id="load-required-packages">Load required packages</h2>
 <div class="cell">
@@ -303,9 +302,7 @@ $ `NJ Female  90% CI Upper Limit`            &lt;dbl&gt; 0.80, 0.96, 0.80, 1.30,
 <span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>gbif_df <span class="ot">&lt;-</span> hsc_gbif<span class="sc">$</span>data <span class="sc">|&gt;</span> <span class="co"># Extract data frame from occurrence records</span></span>
 <span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(decimalLongitude) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(decimalLatitude)) <span class="sc">|&gt;</span> <span class="co"># Only keep rows with lat/long data</span></span>
 <span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(decimalLongitude, decimalLatitude, year) <span class="co"># Select coordinate data</span></span>
-<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a><span class="co">#'</span></span>
-<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a><span class="co">#'</span></span>
-<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a><span class="co">#'</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a><span class="co">#'</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="convert-to-spatial-objects-and-count-modern-occurrences-near-beaches" class="level2">
@@ -356,18 +353,34 @@ $ `NJ Female  90% CI Upper Limit`            &lt;dbl&gt; 0.80, 0.96, 0.80, 1.30,
 <p>Tables and figures (maps and other graphics) are carefully planned to convey the results of your analysis. Intense exploration and evidence of many trials and failures. The author looked at the data in many different ways before coming to the final presentation of the data.</p>
 <p>Show tables, plots, etc. and describe them.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot of occurrence data trend</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(gbif_trends, <span class="fu">aes</span>(<span class="at">x =</span> Decade, <span class="at">y =</span> Observation_Count, <span class="at">group =</span> Beach_Name, <span class="at">color =</span> State)) <span class="sc">+</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> Beach_Name, <span class="at">scales =</span> <span class="st">"free_y"</span>) <span class="sc">+</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Horseshoe Crab Occurrence Trends Near Survey Beaches (1970–2026)"</span>,</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot of historical occurrence data over surveyed beaches with &gt; 2 observations</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>historical_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(gbif_trends, <span class="fu">aes</span>(<span class="at">x =</span> Decade, <span class="at">y =</span> Observation_Count, <span class="at">group =</span> Beach_Name, <span class="at">color =</span> State)) <span class="sc">+</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="fl">0.6</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span> </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span>                     </span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> Beach_Name, <span class="at">scales =</span> <span class="st">"free_y"</span>, <span class="at">ncol =</span> <span class="dv">4</span>) <span class="sc">+</span> <span class="co"># 4 columns x 7 rows grid</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">8</span>) <span class="sc">+</span>  <span class="co"># Shrink baseline fonts</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Horseshoe Crab Occurrence Trends Across All 28 Survey Beaches (1970–2026)"</span>,</span>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Decadal observation counts within 2km buffers"</span>,</span>
 <span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Decade"</span>,</span>
 <span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"GBIF Occurrence Count"</span>) <span class="sc">+</span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>),</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">8</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="dv">6</span>), <span class="co"># Tiny x labels  </span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">6</span>), <span class="co"># Tiny y labels</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">7</span>), <span class="co"># Compact beach titles</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">strip.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"gray95"</span>, <span class="at">color =</span> <span class="cn">NA</span>), <span class="co"># Replace header background and remove border</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.spacing =</span> <span class="fu">unit</span>(<span class="fl">0.4</span>, <span class="st">"lines"</span>), <span class="co"># Add space between subplots</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="st">"bottom"</span>) <span class="co"># Increase horizontal space</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co">#'</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"historical_occurrence.png"</span>, <span class="at">plot =</span> historical_plot, <span class="at">width =</span> <span class="dv">12</span>, <span class="at">height =</span> <span class="dv">16</span>, <span class="at">dpi =</span> <span class="dv">300</span>) <span class="co"># Save to prevent squishing</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_line()`: Each group consists of only one observation.
+ℹ Do you need to adjust the group aesthetic?
+`geom_line()`: Each group consists of only one observation.
+ℹ Do you need to adjust the group aesthetic?
+`geom_line()`: Each group consists of only one observation.
+ℹ Do you need to adjust the group aesthetic?</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#'</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>historical_plot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>`geom_line()`: Each group consists of only one observation.
 ℹ Do you need to adjust the group aesthetic?
