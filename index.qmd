@@ -105,14 +105,10 @@ print(gbif_trends) # View decadal trends per survey beach
 
 # Results
 
-\[\~200 words\]
-
-Tables and figures (maps and other graphics) are carefully planned to convey the results of your analysis. Intense exploration and evidence of many trials and failures. The author looked at the data in many different ways before coming to the final presentation of the data.
-
-Show tables, plots, etc. and describe them.
+Insert and explain awesome map of citizen science occurrence data, survey nesting sites, and a table comparing the two.
 
 ```{r}
-# Plot of historical occurrence data over surveyed beaches with > 2 observations
+# Plot of historical occurrence data over all 28 beaches
 historical_plot <- ggplot(gbif_trends, aes(x = Decade, y = Observation_Count, group = Beach_Name, color = State)) +
   geom_line(linewidth = 0.6, alpha = 0.7) + 
   geom_point(size = 1.2) +                     
@@ -136,10 +132,8 @@ historical_plot
 
 # Conclusions
 
-\[\~200 words\]
-
-Clear summary adequately describing the results and putting them in context. Discussion of further questions and ways to continue investigation.
+Insert awesome conclusion about my findings and how they relate to the problem. Provide limitations and specify how I could go further.
 
 # References
 
-The Annual Horseshoe Crab Spawning Survey <3
+The Annual Horseshoe Crab Spawning Survey & GBIF
