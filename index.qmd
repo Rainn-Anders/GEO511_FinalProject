@@ -1,5 +1,5 @@
 ---
-title: "Horseshoe Crab Nesting Sites in Delaware Bay"
+title: "Modeling Horseshoe Crab Nesting Population Trends in Delaware Bay"
 author: Rainn Anderson
 subtitle: Subtitle here if desired
 date: today
@@ -8,45 +8,13 @@ date-format: long
 
 # Introduction
 
-\[\~ 200 words\]
-
-I'm talking about horseshoe crabs; testing to see if my website is published. 
-Clearly stated background and questions / hypotheses / problems being addressed. Sets up the analysis in an interesting and compelling way. Include figures if you like.
-I love those horseshoe crabs so much, what can I say? This is a test. Take 2.
+ How has the overexploitation of the American Horseshoe Crab (Limulus polyphemus) for commercial and biomedical harvesting impacted their Delaware Bay spawning populations? One of the oldest extant species, horseshoe crabs play a vital role in bay shore ecosystems. The Red Knot, among many other migratory birds, relies primarily on horseshoe crab eggs to complete its journey North. Specifically, this shorebird makes its final “pit stop” in Delaware Bay, the largest aggregation of horseshoe crab nesting sites. Since overharvesting of crabs has led to severe population declines in the past century, I am interested in determining how recent legislation passed regarding harvesting restrictions has affected spawning populations, particularly in the Delaware Bay shore region.
 
 # Materials and methods
 
-\[\~ 200 words\]
+  First, the study area was defined by drawing survey beach coordinates from the Delaware Bay Horseshoe Crab Annual Spawning Survey. Using the rgbif package, citizen scientist observation data of L. polyphemus was curated for 1970 (pre-legislation) to 2026 (post-legislation). After creating buffer rings around the survey beaches, occurrence data was filtered and summarized by decade. The horseshoe crab spawning survey csv file (located in /data), is also here.
 
-Narrative: Clear narrative description of the data sources and methods. Includes data from at least two sources that were integrated / merged in R.
-
-Code: The code associated with the project is well organized and easy to follow. Demonstrates mastery of R graphics and functions.
-
-Data: The underlying data are publicly accessible via the web and downloaded/accessed within the Rmd script. If you want to use your own data, you must make it available on a website (e.g. Figshare) so that others are able to re-run your code.
-
-You can do bullets like this:
-
--   The first most important thing
--   The second most important thing
--   The third most important thing
-
-You can do numbers like this:
-
-1.  The first most important thing
-2.  The second most important thing
-3.  The third most important thing
-
-See <http://rmarkdown.rstudio.com/> for all the amazing things you can do.
-
-Here's my first code chunk.
-
-```{r}
-x=3+4
-```
-
-Refer to output in your narrative like this: x=`r x` .
-
-Load any required packages in a code chunk (you may need to install some packages):
+## Load required packages
 
 ```{r, message=F, warning=F}
 library(tidyverse)
@@ -54,6 +22,9 @@ library(leaflet)
 library(kableExtra)
 library(htmlwidgets)
 library(widgetframe)
+library(rgbif)
+library(ggplot2)
+library(sf)
 knitr::opts_chunk$set(widgetframe_widgets_dir = 'widgets' ) 
 knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling
 ```
@@ -61,25 +32,77 @@ knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling
 ## Download and clean all required data
 
 ```{r}
-n=20
-data=data.frame(x=runif(n,-180,180),
-                y=runif(n,-60,60),
-                size = runif(n, 5, 20),
-                category = factor(
-                  sample(letters[1:5], n, replace = TRUE)
-                  ),
-                value = rnorm(n))
+hsc_survey <- read_csv("data/Horseshoe_Crab_Spawning_Survey_20261107.csv") # Read csv from data folder
+#'
+glimpse(hsc_survey) # Important columns to note: Baywide Male & Female Spawning Activity, % Female Spawning in May
+#'
+# Create Delaware Bay Area Coordinates Data based off of 28 surveyed beaches
+#'
+beach_coords <- tibble(
+  Beach_Name = c(
+    "Woodland Beach", "Pickering Beach", "Kitts Hummock", "Ted Harvey Wildlife Area", 
+    "Bowers Beach", "Bennetts Pier Beach", "Big Stone Beach", "Slaughter Beach", 
+    "Prime Hook Beach", "Fowler Beach", "Broadkill Beach", "Lewes Beach", "Cape Henlopen Point",
+    "Fortescue Beach", "Gandys Beach", "Money Island", "East Point", "Thompson's Beach", 
+    "Moore's Beach", "Reeds Beach", "Cook's Beach", "Kimbles Beach", "Pierces Point", 
+    "Highs Beach", "Norbury's Landing", "Townbank", "North Cape May", "Sunset Beach"
+  ),
+  State = c(
+    "DE", "DE", "DE", "DE", "DE", "DE", "DE", "DE", "DE", "DE", "DE", "DE", "DE",
+    "NJ", "NJ", "NJ", "NJ", "NJ", "NJ", "NJ", "NJ", "NJ", "NJ", "NJ", "NJ", "NJ", "NJ", "NJ"
+  ),
+  Latitude = c(
+    39.3370, 39.1415, 39.1022, 39.0835, 39.0592, 39.0068, 38.9895, 38.9150, 
+    38.8682, 38.8520, 38.8280, 38.7830, 38.8020,
+    39.2372, 39.2818, 39.2778, 39.1965, 39.1925, 39.1868, 39.1278, 39.1120, 
+    39.0985, 39.0768, 39.0620, 39.0435, 38.9912, 38.9725, 38.9370
+  ),
+  Longitude = c(
+    -75.4740, -75.4095, -75.4005, -75.3940, -75.3970, -75.3582, -75.3180, -75.3060, 
+    -75.2440, -75.2280, -75.2070, -75.1480, -75.0930,
+    -75.1765, -75.2345, -75.2388, -75.0278, -74.9740, -74.9605, -74.8965, -74.8912, 
+    -74.8910, -74.9125, -74.9218, -74.9355, -74.9635, -74.9610, -74.9585
+  )
+)
+#'
+hsc_gbif <- occ_data( # Get occurrence records from GBIF
+  scientificName = "Limulus polyphemus",
+  decimalLatitude = "38.7,39.6", # Set bounding box coordinates equal to study area
+  decimalLongitude = "-75.6,-74.8",
+  hasCoordinate = TRUE, # Return only records with lat/long data
+  year = "1970,2026", # Define temporal limits
+  limit = 3000) # Set record limit
+#'
+gbif_df <- hsc_gbif$data |> # Extract data frame from occurrence records
+  filter(!is.na(decimalLongitude) & !is.na(decimalLatitude)) |> # Only keep rows with lat/long data
+  select(decimalLongitude, decimalLatitude, year) # Select coordinate data
+#'
 ```
 
-```{r, results='asis'}
-data %>% 
-  slice(1:10) %>% #show only 1:n rows
-  kable(digits=2,align="c")%>% #make table and round to two digits
-  kable_styling(bootstrap_options = 
-                  c("striped", "hover", "condensed", "responsive")) #apply other formatting
-```
+##  Convert to spatial objects and count modern occurrences near beaches
 
-Add any additional processing steps here.
+```{r}
+gbif_sf <- st_as_sf(gbif_df, coords = c("decimalLongitude", "decimalLatitude"), crs = 4326) # Convert occurrence data to spatial object
+beach_sf <- st_as_sf(beach_coords, coords = c("Longitude", "Latitude"), crs = 4326) # Convert beach coordinates to spatial object
+#'
+beach_buffers_2km <- st_buffer(st_transform(beach_sf, 32618), dist = 2000) # Create a 2 km buffer around each survey beach
+gbif_proj <- st_transform(gbif_sf, 32618) # Project occurrence data to match buffer crs
+#'
+gbif_trends <- gbif_proj |>
+  st_join(beach_buffers_2km, join = st_intersects) |> # Link GBIF points to beach buffers
+  st_drop_geometry() |>
+  drop_na(Beach_Name) |> # Only keep points within buffers
+  mutate(Decade = case_when(year >= 1970 & year < 1980 ~ "1970s", # Create decades
+                            year >= 1980 & year < 1990 ~ "1980s",
+                            year >= 1990 & year < 2000 ~ "1990s",
+                            year >= 2000 & year < 2010 ~ "2000s",
+                            year >= 2010 & year < 2020 ~ "2010s",
+                            year >= 2020 ~ "2020s-present")) |> 
+  group_by(Beach_Name, Decade, State) |>
+  summarise(Observation_Count = n(), .groups = "drop") # Summarize selected groups
+#'
+print(gbif_trends) # View decadal trends per survey beach
+```
 
 # Results
 
@@ -89,26 +112,19 @@ Tables and figures (maps and other graphics) are carefully planned to convey the
 
 Show tables, plots, etc. and describe them.
 
-```{r, fig.width=6, fig.height=3, fig.cap="Map of completely random data"}
-m <- leaflet(data) %>% 
-  addTiles() %>% 
-  addCircleMarkers(~x, ~y, radius = ~size,color = ~as.factor(category)) %>% 
-  addPopups(~x[2], ~y[2], "Random popup")
-m  # a map with the default OSM tile layer
-```
-
 ```{r}
-data %>% 
-  ggplot(aes(x=x,y=y,col=category))+
-  geom_point()
-```
-
-### Dygraphs Example
-
-```{r}
-library(dygraphs)
-dygraph(nhtemp, main = "New Haven Temperatures") |> 
-  dyRangeSelector(dateWindow = c("1920-01-01", "1960-01-01")) 
+# Plot of occurrence data trend
+ggplot(gbif_trends, aes(x = Decade, y = Observation_Count, group = Beach_Name, color = State)) +
+  geom_line(linewidth = 1, alpha = 0.7) +
+  geom_point(size = 2) +
+  facet_wrap(~ Beach_Name, scales = "free_y") +
+  theme_minimal() +
+  labs(title = "Horseshoe Crab Occurrence Trends Near Survey Beaches (1970–2026)",
+       subtitle = "Decadal observation counts within 2km buffers",
+       x = "Decade",
+       y = "GBIF Occurrence Count") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        strip.text = element_text(face = "bold", size = 8))
 ```
 
 # Conclusions
@@ -119,4 +135,4 @@ Clear summary adequately describing the results and putting them in context. Dis
 
 # References
 
-All sources are cited in a consistent manner
+The Annual Horseshoe Crab Spawning Survey <3
