@@ -12,7 +12,7 @@ date-format: long
 
 # Materials and methods
 
-  First, the study area was defined by drawing survey beach coordinates from the Delaware Bay Horseshoe Crab Annual Spawning Survey. Using the rgbif package, citizen scientist observation data of L. polyphemus was curated for 1970 (pre-legislation) to 2026 (post-legislation). After creating buffer rings around the survey beaches, occurrence data was filtered and summarized by decade. The horseshoe crab spawning survey csv file (located in /data), is also here.
+  First, the study area was defined by drawing survey beach coordinates from the Delaware Bay Horseshoe Crab Annual Spawning Survey. Using the rgbif package, citizen scientist observation data of L. polyphemus was curated for 1970 (pre-legislation) to 2026 (post-legislation). After creating buffer rings around the survey beaches, occurrence data was filtered and summarized by decade. The horseshoe crab spawning survey csv file (located in /data).
 
 ## Load required packages
 
