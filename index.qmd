@@ -1,19 +1,18 @@
 ---
 title: "Modeling Horseshoe Crab Nesting Population Trends in Delaware Bay"
 author: Rainn Anderson
-subtitle: Subtitle here if desired
 date: today
 date-format: long
 ---
 
 # Introduction
 
- How has the overexploitation of the American Horseshoe Crab (Limulus polyphemus) for commercial and biomedical harvesting impacted their Delaware Bay spawning populations? One of the oldest extant species, horseshoe crabs play a vital role in bay shore ecosystems. The Red Knot, among many other migratory birds, relies primarily on horseshoe crab eggs to complete its journey North. Specifically, this shorebird makes its final “pit stop” in Delaware Bay, the largest aggregation of horseshoe crab nesting sites. Since overharvesting of crabs has led to severe population declines in the past century, I am interested in determining how recent legislation passed regarding harvesting restrictions has affected spawning populations, particularly in the Delaware Bay shore region.
+ How has the overexploitation of the American Horseshoe Crab (Limulus polyphemus) for commercial and biomedical harvesting impacted their Delaware Bay spawning populations? One of the oldest extant species, horseshoe crabs play a vital role in bay shore ecosystems. The Red Knot, among many other migratory birds, relies primarily on horseshoe crab eggs to complete its journey North. Specifically, this shorebird makes its final “pit stop” in Delaware Bay, the largest aggregation of horseshoe crab nesting sites. Since overharvesting of crabs has led to severe population declines in the past century, I am interested in determining how recent legislation passed regarding harvesting restrictions has affected spawning populations, particularly in the Delaware Bay shore region. By modeling historical citizen science occurrence data alongside annual spawning survey data, I intend to visualize fluctuations in horseshoe crab nesting sites. While this study will not prove correlation, it may provide insight as to how crab populations have changed since the establishment of anti-over-harvesting legislature.
 
 # Materials and methods
 
-  First, the study area was defined by drawing survey beach coordinates from the Delaware Bay Horseshoe Crab Annual Spawning Survey. Using the rgbif package, citizen scientist observation data of L. polyphemus was curated for 1970 (pre-legislation) to 2026 (post-legislation). After creating buffer rings around the survey beaches, occurrence data was filtered and summarized by decade. The horseshoe crab spawning survey csv file (located in the /data folder).
-
+  The study area was first defined by drawing 28 survey beach coordinates from the Delaware Bay Horseshoe Crab Annual Spawning Survey. Using the rgbif package, citizen scientist observation data of L. polyphemus was curated for 1970 (pre-legislation) to 2026 (post-legislation). After creating buffer rings around the survey beaches, occurrence data was filtered and summarized by decade. The horseshoe crab spawning survey csv file (located in the /data folder) will be used to compare citizen science data to official survey records and further visualize population fluctuations. Specifically, I intend to use the Baywide Male & Female Spawning Activity and % Female Spawning in May columns to model changes in nesting sites.
+ 
 ## Load required packages
 
 ```{r, message=F, warning=F}
@@ -77,8 +76,6 @@ gbif_df <- hsc_gbif$data |> # Extract data frame from occurrence records
   filter(!is.na(decimalLongitude) & !is.na(decimalLatitude)) |> # Only keep rows with lat/long data
   select(decimalLongitude, decimalLatitude, year) # Select coordinate data
 #'
-#'
-#'
 ```
 
 ##  Convert to spatial objects and count modern occurrences near beaches
@@ -115,18 +112,26 @@ Tables and figures (maps and other graphics) are carefully planned to convey the
 Show tables, plots, etc. and describe them.
 
 ```{r}
-# Plot of occurrence data trend
-ggplot(gbif_trends, aes(x = Decade, y = Observation_Count, group = Beach_Name, color = State)) +
-  geom_line(linewidth = 1, alpha = 0.7) +
-  geom_point(size = 2) +
-  facet_wrap(~ Beach_Name, scales = "free_y") +
-  theme_minimal() +
-  labs(title = "Horseshoe Crab Occurrence Trends Near Survey Beaches (1970–2026)",
+# Plot of historical occurrence data over surveyed beaches with > 2 observations
+historical_plot <- ggplot(gbif_trends, aes(x = Decade, y = Observation_Count, group = Beach_Name, color = State)) +
+  geom_line(linewidth = 0.6, alpha = 0.7) + 
+  geom_point(size = 1.2) +                     
+  facet_wrap(~ Beach_Name, scales = "free_y", ncol = 4) + # 4 columns x 7 rows grid
+  theme_minimal(base_size = 8) +  # Shrink baseline fonts
+  labs(title = "Horseshoe Crab Occurrence Trends Across All 28 Survey Beaches (1970–2026)",
        subtitle = "Decadal observation counts within 2km buffers",
        x = "Decade",
        y = "GBIF Occurrence Count") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        strip.text = element_text(face = "bold", size = 8))
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 6), # Tiny x labels  
+        axis.text.y = element_text(size = 6), # Tiny y labels
+        strip.text = element_text(face = "bold", size = 7), # Compact beach titles
+        strip.background = element_rect(fill = "gray95", color = NA), # Replace header background and remove border
+        panel.spacing = unit(0.4, "lines"), # Add space between subplots
+        legend.position = "bottom") # Increase horizontal space
+#'
+ggsave("historical_occurrence.png", plot = historical_plot, width = 12, height = 16, dpi = 300) # Save to prevent squishing
+#'
+historical_plot
 ```
 
 # Conclusions
