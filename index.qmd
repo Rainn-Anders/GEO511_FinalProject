@@ -31,6 +31,8 @@ knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling
 ## Download and clean all required data
 
 ```{r}
+# The analysis so far uses GBIF species occurrence data, but the hsc_survey dataset has not yet been incorporated. I think #it would be important to include the official spawning survey data as a supplementary analysis for comparison.
+
 hsc_survey <- read_csv("data/Horseshoe_Crab_Spawning_Survey_20261107.csv") # Read csv from data folder
 #'
 glimpse(hsc_survey) # Important columns to note: Baywide Male & Female Spawning Activity, % Female Spawning in May
@@ -84,6 +86,7 @@ gbif_df <- hsc_gbif$data |> # Extract data frame from occurrence records
 gbif_sf <- st_as_sf(gbif_df, coords = c("decimalLongitude", "decimalLatitude"), crs = 4326) # Convert occurrence data to spatial object
 beach_sf <- st_as_sf(beach_coords, coords = c("Longitude", "Latitude"), crs = 4326) # Convert beach coordinates to spatial object
 #'
+# It is reasonable to use manually defined buffers. You could also conduct a sensitivity analysis using different buffer #distances (e.g., 2 km, 5 km, and 10 km) to examine whether the observed trends are consistent across different spatial #scales.
 beach_buffers_2km <- st_buffer(st_transform(beach_sf, 32618), dist = 2000) # Create a 2 km buffer around each survey beach
 gbif_proj <- st_transform(gbif_sf, 32618) # Project occurrence data to match buffer crs
 #'
@@ -108,6 +111,7 @@ print(gbif_trends) # View decadal trends per survey beach
 Insert and explain awesome map of citizen science occurrence data, survey nesting sites, and a table comparing the two.
 
 ```{r}
+# I think it would be better to add a vertical line to indicate the year when the new policy took effect.
 # Plot of historical occurrence data over all 28 beaches
 historical_plot <- ggplot(gbif_trends, aes(x = Decade, y = Observation_Count, group = Beach_Name, color = State)) +
   geom_line(linewidth = 0.6, alpha = 0.7) + 
